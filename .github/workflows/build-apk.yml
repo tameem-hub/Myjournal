@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - "MyJournal-v1.1.zip"
+      - "MyJournal-v1.2.zip"
       - ".github/workflows/build-apk.yml"
 
 jobs:
@@ -24,7 +24,7 @@ jobs:
       - name: Extract project
         run: |
           mkdir project
-          unzip -q MyJournal-v1.1.zip -d project
+          unzip -q MyJournal-v1.2.zip -d project
           echo "android.useAndroidX=true" > project/gradle.properties
 
       - name: Configure Java 17
