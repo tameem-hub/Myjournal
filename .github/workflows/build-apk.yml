@@ -20,35 +20,48 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
+
       - name: Extract project
         run: |
           mkdir project
           unzip -q MyJournal-v1.1.zip -d project
           echo "android.useAndroidX=true" > project/gradle.properties
-          
+
+      - name: Configure Java 17
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path("project/app/build.gradle.kts")
+          s = p.read_text()
+
+          s = s.replace(
+              "    compileSdk = 35",
+              """    compileSdk = 35
+
+              compileOptions {
+                  sourceCompatibility = JavaVersion.VERSION_17
+                  targetCompatibility = JavaVersion.VERSION_17
+              }"""
+          )
+
+          s = s.replace(
+              "dependencies {",
+              """kotlin {
+              jvmToolchain(17)
+          }
+
+          dependencies {"""
+          )
+
+          p.write_text(s)
+          PY
+
       - name: Install Gradle
         run: |
           curl -L -o gradle.zip https://services.gradle.org/distributions/gradle-8.9-bin.zip
           unzip -q gradle.zip -d "$HOME"
           echo "$HOME/gradle-8.9/bin" >> "$GITHUB_PATH"
-
-            - name: Configure Java 17
-        run: |
-          cat >> project/app/build.gradle.kts <<'EOF'
-
-          android {
-              compileOptions {
-                  sourceCompatibility = JavaVersion.VERSION_17
-                  targetCompatibility = JavaVersion.VERSION_17
-              }
-          }
-
-          tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-              kotlinOptions {
-                  jvmTarget = "17"
-              }
-          }
-          EOF
 
       - name: Build APK
         working-directory: project
