@@ -32,6 +32,24 @@ jobs:
           unzip -q gradle.zip -d "$HOME"
           echo "$HOME/gradle-8.9/bin" >> "$GITHUB_PATH"
 
+            - name: Configure Java 17
+        run: |
+          cat >> project/app/build.gradle.kts <<'EOF'
+
+          android {
+              compileOptions {
+                  sourceCompatibility = JavaVersion.VERSION_17
+                  targetCompatibility = JavaVersion.VERSION_17
+              }
+          }
+
+          tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+              kotlinOptions {
+                  jvmTarget = "17"
+              }
+          }
+          EOF
+
       - name: Build APK
         working-directory: project
         run: gradle assembleDebug --no-daemon
