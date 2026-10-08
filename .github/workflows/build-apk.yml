@@ -20,12 +20,12 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
-
       - name: Extract project
         run: |
           mkdir project
           unzip -q MyJournal-v1.1.zip -d project
-
+          echo "android.useAndroidX=true" > project/gradle.properties
+          
       - name: Install Gradle
         run: |
           curl -L -o gradle.zip https://services.gradle.org/distributions/gradle-8.9-bin.zip
